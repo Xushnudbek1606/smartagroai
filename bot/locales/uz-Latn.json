@@ -1,0 +1,18 @@
+{
+  "welcome": "Assalomu alaykum! Men SmartAgroAI botiman. 🌱\nHisobingizni bog'lash uchun /account buyrug'ini bering.",
+  "help": "SmartAgroAI bot buyruqlari:\n\n/start — botni ishga tushirish\n/account — akkaunt holatini tekshirish yoki bog'lash\n/weather — tanlangan hudud ob-havosini ko'rish\n/language — bot tilini tanlash\n/notifications — bildirishnomalarni boshqarish\n/yordam yoki /help — shu yordam xabari",
+  "account_not_linked": "Telegram akkauntingiz hali bog'lanmagan.\n\nBog'lash uchun:\n1. Administrator sizga taklif kodini beradi\n2. Quyida kodni yuboring: /account KOD\n\nKod bir martalik va 30 daqiqa amal qiladi.",
+  "account_linked": "✅ Hisobingiz bog'landi!\nLoyiha: smartagro.uz\nLogin: {username}\nVaqtinchalik parol: {password}\n\n⚠️ Birinchi kirishda parolni almashtirish shart.",
+  "code_invalid": "❌ Taklif kod noto'g'ri yoki muddati tugagan. Administratordan yangi kod oling.",
+  "already_linked": "Bu Telegram akkaunt allaqachon bog'langan. /account buyrug'i bilan tekshiring.",
+  "weather_prompt": "Hududni kiriting: /weather Toshkent shahri",
+  "weather_current": "🌤 {location}\nHarorat: {temperature}°C (his qilingan: {feels_like}°C)\nNamlik: {humidity}%\nShamol: {wind_speed} m/s\n{description}\n\nYangilangan: {fetched_at}",
+  "weather_error": "Ob-havoni olib bo'lmadi: {message}",
+  "language_prompt": "Tilni tanlang:",
+  "language_set": "✅ Til o'zgartirildi: {language}",
+  "notifications_on": "✅ Bildirishnomalar yoqildi.",
+  "notifications_off": "🔇 Bildirishnomalar o'chirildi.",
+  "new_message": "💬 Yangi xabar: {sender}\n{preview}",
+  "diagnosis_done": "🔬 AI tahlil yakunlandi!\nKasallik: {disease}\nIshonchlilik: {confidence}\nBatafsil platformada: Tashxislar bo'limi.",
+  "error": "Kutilmagan xatolik yuz berdi. Birozdan so'ng qayta urinib ko'ring."
+}

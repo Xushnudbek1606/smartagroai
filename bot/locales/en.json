@@ -1,0 +1,18 @@
+{
+  "welcome": "Hello! I am the SmartAgroAI bot. 🌱\nUse /account to link your account.",
+  "help": "SmartAgroAI bot commands:\n\n/start — start the bot\n/account — check or link account status\n/weather — show weather for your saved region\n/language — choose bot language\n/notifications — manage notifications\n/help — this help message",
+  "account_not_linked": "Your Telegram account is not linked yet.\n\nTo link it:\n1. Your administrator gives you an invitation code\n2. Send the code here: /account CODE\n\nThe code is single-use and valid for 30 minutes.",
+  "account_linked": "✅ Your account is linked!\nPlatform: smartagro.uz\nUsername: {username}\nTemporary password: {password}\n\n⚠️ You must change the password on first sign-in.",
+  "code_invalid": "❌ The invitation code is invalid or expired. Get a new code from your administrator.",
+  "already_linked": "This Telegram account is already linked. Check with /account.",
+  "weather_prompt": "Enter a location: /weather Tashkent city",
+  "weather_current": "🌤 {location}\nTemperature: {temperature}°C (feels like: {feels_like}°C)\nHumidity: {humidity}%\nWind: {wind_speed} m/s\n{description}\n\nUpdated: {fetched_at}",
+  "weather_error": "Could not fetch weather: {message}",
+  "language_prompt": "Choose a language:",
+  "language_set": "✅ Language changed: {language}",
+  "notifications_on": "✅ Notifications enabled.",
+  "notifications_off": "🔇 Notifications disabled.",
+  "new_message": "💬 New message from {sender}\n{preview}",
+  "diagnosis_done": "🔬 AI analysis finished!\nDisease: {disease}\nConfidence: {confidence}\nDetails on the platform: Diagnoses section.",
+  "error": "An unexpected error occurred. Please try again later."
+}

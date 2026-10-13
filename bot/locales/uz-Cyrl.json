@@ -1,0 +1,18 @@
+{
+  "welcome": "Ассалому алайкум! Мен SmartAgroAI ботиман. 🌱\nҲисобингизни улаш учун /account буйруғини юборинг.",
+  "help": "SmartAgroAI бот буйруқлари:\n\n/start — ботни ишга тушириш\n/account — ҳисоб ҳолатини текшириш ёки улаш\n/weather — танланган ҳудуд об-ҳавосини кўриш\n/language — бот тилини танлаш\n/notifications — билдиришномаларни бошқариш\n/yardam ёки /help — шу ёрдам хабари",
+  "account_not_linked": "Telegram ҳисобингиз ҳали уланмаган.\n\nУлаш учун:\n1. Администратор сизга таклиф кодини беради\n2. Қуйида кодни юборинг: /account KOD\n\nКод бир марталик ва 30 дақиқа амал қилади.",
+  "account_linked": "✅ Ҳисобингиз уланди!\nЛойиҳа: smartagro.uz\nЛогин: {username}\nВақтлинчак парол: {password}\n\n⚠️ Биринчи киришда паролни алмаштириш шарт.",
+  "code_invalid": "❌ Таклиф код нотўғри ёки муддати тугади. Администратордан янги код олинг.",
+  "already_linked": "Бу Telegram ҳисоб аллақачон уланган. /account буйруғи билан текширинг.",
+  "weather_prompt": "Ҳудудни киритинг: /weather Тошкент шахри",
+  "weather_current": "🌤 {location}\nҲарорат: {temperature}°C (ҳис қилинган: {feels_like}°C)\nНамлик: {humidity}%\nШамол: {wind_speed} м/с\n{description}\n\nЯнгиланди: {fetched_at}",
+  "weather_error": "Об-ҳавони олиб бўлмади: {message}",
+  "language_prompt": "Тилни танланг:",
+  "language_set": "✅ Тил ўзгардирилди: {language}",
+  "notifications_on": "✅ Билдиришномалар юқилди.",
+  "notifications_off": "🔇 Билдиришномалар ўчирилди.",
+  "new_message": "💬 Янги хабар: {sender}\n{preview}",
+  "diagnosis_done": "🔬 AI таҳлил якунланди!\nКасаллик: {disease}\nИшончлилик: {confidence}\nБатафсил платформада: Ташхислар бўлими.",
+  "error": "Кутмаган хатолик юз берди. Бироздан сўнг қайта уриниб кўринг."
+}

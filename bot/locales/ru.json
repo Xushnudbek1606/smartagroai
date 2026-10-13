@@ -1,0 +1,18 @@
+{
+  "welcome": "Здравствуйте! Я бот SmartAgroAI. 🌱\nИспользуйте /account для привязки аккаунта.",
+  "help": "Команды бота SmartAgroAI:\n\n/start — запустить бота\n/account — проверить или привязать аккаунт\n/weather — показать погоду для сохранённого региона\n/language — выбрать язык бота\n/notifications — управлять уведомлениями\n/help — это сообщение справки",
+  "account_not_linked": "Ваш аккаунт Telegram ещё не привязан.\n\nДля привязки:\n1. Администратор выдаёт код приглашения\n2. Отправьте код сюда: /account КОД\n\nКод одноразовый и действителен 30 минут.",
+  "account_linked": "✅ Ваш аккаунт привязан!\nПлатформа: smartagro.uz\nЛогин: {username}\nВременный пароль: {password}\n\n⚠️ При первом входе необходимо сменить пароль.",
+  "code_invalid": "❌ Код приглашения недействителен или истёк. Получите новый код у администратора.",
+  "already_linked": "Этот аккаунт Telegram уже привязан. Проверьте через /account.",
+  "weather_prompt": "Введите местоположение: /weather Ташкент",
+  "weather_current": "🌤 {location}\nТемпература: {temperature}°C (ощущается: {feels_like}°C)\nВлажность: {humidity}%\nВетер: {wind_speed} м/с\n{description}\n\nОбновлено: {fetched_at}",
+  "weather_error": "Не удалось получить погоду: {message}",
+  "language_prompt": "Выберите язык:",
+  "language_set": "✅ Язык изменён: {language}",
+  "notifications_on": "✅ Уведомления включены.",
+  "notifications_off": "🔇 Уведомления отключены.",
+  "new_message": "💬 Новое сообщение от {sender}\n{preview}",
+  "diagnosis_done": "🔬 Анализ ИИ завершён!\nЗаболевание: {disease}\nУверенность: {confidence}\nПодробности на платформе: раздел «Диагнозы».",
+  "error": "Произошла непредвиденная ошибка. Попробуйте позже."
+}
