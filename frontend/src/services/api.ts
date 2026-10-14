@@ -3,6 +3,26 @@ import type { ApiErrorBody, TokenPair } from '../types';
 
 export const API_BASE = import.meta.env.VITE_API_URL || '/api/v1';
 
+// Origin of the API host. Empty in development, where the Vite dev server
+// proxies /api and /static to the local backend; in production (Vercel) the
+// app and the API live on different domains, so asset URLs need the host.
+export const API_ORIGIN = (() => {
+  if (!/^https?:\/\//i.test(API_BASE)) return '';
+  try {
+    return new URL(API_BASE).origin;
+  } catch {
+    return '';
+  }
+})();
+
+// Uploads are stored as backend-relative paths (/static/...), so they must be
+// resolved against the API host instead of the page host.
+export function assetUrl(path: string | null | undefined): string {
+  if (!path) return '';
+  if (/^(https?:|data:|blob:)/i.test(path)) return path;
+  return `${API_ORIGIN}${path}`;
+}
+
 const STORAGE_ACCESS = 'smartagro_access';
 const STORAGE_REFRESH = 'smartagro_refresh';
 

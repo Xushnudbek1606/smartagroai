@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BadgeCheck, ExternalLink, MessageCircle, Search, Users } from 'lucide-react';
-import { api, extractError } from '../services/api';
+import { api, assetUrl, extractError } from '../services/api';
 import { Badge, EmptyState, ErrorState, LoadingBlock } from '../components/ui';
 import type { Conversation, Page, Subscription, User } from '../types';
 
@@ -89,7 +89,7 @@ export default function AgronomistsPage() {
             <div key={a.id} className="card p-5">
               <div className="flex items-center gap-3">
                 {a.avatar_url ? (
-                  <img src={a.avatar_url} alt="" className="w-12 h-12 rounded-xl object-cover" />
+                  <img src={assetUrl(a.avatar_url)} alt="" className="w-12 h-12 rounded-xl object-cover" />
                 ) : (
                   <div className="w-12 h-12 rounded-xl bg-accent/15 text-accent flex items-center justify-center text-lg font-bold">
                     {a.full_name.charAt(0)}

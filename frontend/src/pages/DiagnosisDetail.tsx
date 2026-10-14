@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MessageCircle } from 'lucide-react';
-import { api, extractError } from '../services/api';
+import { api, assetUrl, extractError } from '../services/api';
 import { Badge, ErrorState, LoadingBlock } from '../components/ui';
 import { formatDateTime } from '../utils/format';
 import type { Diagnosis } from '../types';
@@ -46,7 +46,7 @@ export default function DiagnosisDetail() {
 
       <div className="grid md:grid-cols-2 gap-6">
         <div className="card overflow-hidden">
-          <img src={d.image_url} alt="" className="w-full max-h-[420px] object-contain bg-surface2" />
+          <img src={assetUrl(d.image_url)} alt="" className="w-full max-h-[420px] object-contain bg-surface2" />
         </div>
 
         <div className="space-y-4">

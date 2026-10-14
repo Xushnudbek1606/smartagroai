@@ -83,6 +83,29 @@ python -m bot.main
 
 ---
 
+## Deploying
+
+The frontend is a static SPA and deploys to Vercel; the API and the Telegram bot
+need long-lived processes, so they run on a Docker host/VPS.
+
+### Vercel (frontend)
+
+1. Import the repository and set **Root Directory** to `frontend`.
+2. The framework preset is **Vite**; `frontend/vercel.json` pins the build command
+   (`npm run build`) and output directory (`dist`).
+3. Add these environment variables in the Vercel project (they are baked into the
+   bundle at build time, so a change needs a redeploy):
+   - `VITE_API_URL` — full API URL *including* the prefix, e.g. `https://api.example.com/api/v1`
+   - `VITE_WS_URL` — WebSocket origin only, e.g. `wss://api.example.com`
+4. On the backend, add the deployed origin to `BACKEND_CORS_ORIGINS`
+   (e.g. `https://smartagroai.vercel.app`) and restart the API.
+
+Client-side routes (`/dashboard`, `/diagnoses/:id`, …) are handled by the SPA
+fallback in `frontend/vercel.json`, and uploaded photos/avatars are resolved
+against the API host by `assetUrl()` in `frontend/src/services/api.ts`.
+
+---
+
 ## Environment variables
 
 See [.env.example](.env.example). The important ones:

@@ -10,7 +10,7 @@ import {
   Upload,
   Wind,
 } from 'lucide-react';
-import { api, extractError } from '../services/api';
+import { api, assetUrl, extractError } from '../services/api';
 import { useAuthStore } from '../store/auth';
 import { Badge, EmptyState, ErrorState, LoadingBlock, StatCard, showToast } from '../components/ui';
 import { formatDate, formatNumber, formatRelative } from '../utils/format';
@@ -158,7 +158,7 @@ export default function FarmerDashboard() {
                   to={`/diagnoses/${d.id}`}
                   className="flex items-center gap-4 rounded-xl border border-borderc bg-surface2/50 p-3 hover:border-primary/40 transition-colors"
                 >
-                  <img src={d.image_url} alt="" className="w-14 h-14 rounded-lg object-cover bg-surface2" />
+                  <img src={assetUrl(d.image_url)} alt="" className="w-14 h-14 rounded-lg object-cover bg-surface2" />
                   <div className="min-w-0 flex-1">
                     <p className="font-medium truncate">{d.disease_name || t('diagnosis.severityUnknown')}</p>
                     <p className="text-xs text-textSecondary truncate">

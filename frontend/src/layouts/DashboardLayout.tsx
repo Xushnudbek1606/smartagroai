@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useAuthStore } from '../store/auth';
-import { api } from '../services/api';
+import { api, assetUrl } from '../services/api';
 import type { AppNotification } from '../types';
 import { useNotificationSocket } from '../hooks/useNotificationSocket';
 
@@ -231,7 +231,7 @@ export default function DashboardLayout() {
               aria-label={t('nav.profile')}
             >
               {user?.avatar_url ? (
-                <img src={user.avatar_url} alt="" className="w-8 h-8 rounded-lg object-cover" />
+                <img src={assetUrl(user.avatar_url)} alt="" className="w-8 h-8 rounded-lg object-cover" />
               ) : (
                 <div className="w-8 h-8 rounded-lg bg-accent/20 text-accent flex items-center justify-center text-sm font-bold">
                   {(user?.full_name || '?').charAt(0).toUpperCase()}

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { BrainCircuit, Trash2 } from 'lucide-react';
-import { api, extractError } from '../services/api';
+import { api, assetUrl, extractError } from '../services/api';
 import { Badge, EmptyState, ErrorState, LoadingBlock, Modal, showToast } from '../components/ui';
 import { formatRelative } from '../utils/format';
 import type { Diagnosis, Page } from '../types';
@@ -60,7 +60,7 @@ export default function DiagnosisHistory() {
             {data?.items.map((d) => (
               <div key={d.id} className="card overflow-hidden hover:border-primary/40 transition-colors group">
                 <Link to={`/diagnoses/${d.id}`}>
-                  <img src={d.image_url} alt="" className="w-full h-44 object-cover bg-surface2" />
+                  <img src={assetUrl(d.image_url)} alt="" className="w-full h-44 object-cover bg-surface2" />
                 </Link>
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2">

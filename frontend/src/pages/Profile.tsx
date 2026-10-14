@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, MessageCircle, Save, User as UserIcon } from 'lucide-react';
-import { api, extractError } from '../services/api';
+import { api, assetUrl, extractError } from '../services/api';
 import { useAuthStore } from '../store/auth';
 import { Badge, LoadingBlock, showToast } from '../components/ui';
 import { formatDate } from '../utils/format';
@@ -86,7 +86,7 @@ export default function ProfilePage() {
       <div className="card p-6 flex flex-wrap items-center gap-5">
         <div className="relative">
           {user.avatar_url ? (
-            <img src={user.avatar_url} alt="" className="w-20 h-20 rounded-2xl object-cover" />
+            <img src={assetUrl(user.avatar_url)} alt="" className="w-20 h-20 rounded-2xl object-cover" />
           ) : (
             <div className="w-20 h-20 rounded-2xl bg-accent/15 text-accent flex items-center justify-center text-2xl font-bold">
               {user.full_name.charAt(0)}
