@@ -47,6 +47,7 @@ def _handle(resp: httpx.Response) -> dict[str, Any]:
         detail = f"HTTP {resp.status_code}"
     code = {
         401: "invalid_invitation_code",
+        403: "telegram_username_mismatch",
         404: "not_found",
         409: "telegram_already_linked",
         503: "backend_unavailable",
@@ -70,14 +71,27 @@ async def account_status(telegram_id: str) -> dict[str, Any]:
     return await _get("/internal/telegram/status", {"telegram_id": str(telegram_id)})
 
 
-async def user_info(telegram_id: str) -> dict[str, Any]:
-    return await _get("/internal/telegram/user", {"telegram_id": str(telegram_id)})
+async def user_info(telegram_id: str, telegram_username: str | None = None) -> dict[str, Any]:
+    """Who is talking to us. Passing the current @username keeps the stored
+    binding in sync with the Telegram account (identity key = telegram_id)."""
+    params: dict[str, Any] = {"telegram_id": str(telegram_id)}
+    if telegram_username:
+        params["telegram_username"] = telegram_username
+    return await _get("/internal/telegram/user", params)
 
 
 async def set_preferences(telegram_id: str, enabled: bool) -> dict[str, Any]:
     return await _post(
         "/internal/telegram/preferences",
         {"telegram_id": str(telegram_id), "enabled": enabled},
+    )
+
+
+async def set_language(telegram_id: str, language: str) -> dict[str, Any]:
+    """Persist the /language choice to the user's platform profile."""
+    return await _post(
+        "/internal/telegram/language",
+        {"telegram_id": str(telegram_id), "language": language},
     )
 
 

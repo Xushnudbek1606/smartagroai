@@ -84,6 +84,7 @@ class UserOut(ORMModel):
     username: str
     role: str
     telegram_id: str | None = None
+    telegram_username: str | None = None
     phone: str | None = None
     region: str | None = None
     district: str | None = None
@@ -103,6 +104,9 @@ class UserCreate(BaseModel):
     region: str | None = Field(default=None, max_length=80)
     district: str | None = Field(default=None, max_length=80)
     preferred_language: str = Field(default="uz-Latn", pattern=r"^(uz-Latn|uz-Cyrl|en|ru)$")
+    # Telegram @username (without @) — hint so /account CODE only completes
+    # from the matching Telegram account. Must be set BEFORE linking.
+    telegram_username: str | None = Field(default=None, min_length=4, max_length=64)
 
 
 class UserCreateOut(BaseModel):
@@ -129,6 +133,9 @@ class AdminUserUpdate(BaseModel):
     region: str | None = Field(default=None, max_length=80)
     district: str | None = Field(default=None, max_length=80)
     preferred_language: str | None = Field(default=None, pattern=r"^(uz-Latn|uz-Cyrl|en|ru)$")
+    # Only changeable while the account is NOT yet linked to Telegram —
+    # after linking the real @username comes from Telegram itself.
+    telegram_username: str | None = Field(default=None, min_length=4, max_length=64)
 
 
 class PasswordResetOut(BaseModel):
@@ -425,3 +432,13 @@ class SettingsUpdate(BaseModel):
 class TelegramHeartbeat(BaseModel):
     bot_started_at: datetime | None = None
     version: str | None = None
+
+
+class TelegramPreferencesRequest(BaseModel):
+    telegram_id: str = Field(min_length=5, max_length=32)
+    enabled: bool
+
+
+class TelegramLanguageRequest(BaseModel):
+    telegram_id: str = Field(min_length=5, max_length=32)
+    language: str = Field(min_length=2, max_length=10)

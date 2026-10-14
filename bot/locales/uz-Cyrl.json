@@ -5,6 +5,7 @@
   "account_linked": "✅ Ҳисобингиз уланди!\nЛойиҳа: smartagro.uz\nЛогин: {username}\nВақтлинчак парол: {password}\n\n⚠️ Биринчи киришда паролни алмаштириш шарт.",
   "code_invalid": "❌ Таклиф код нотўғри ёки муддати тугади. Администратордан янги код олинг.",
   "already_linked": "Бу Telegram ҳисоб аллақачон уланган. /account буйруғи билан текширинг.",
+  "username_mismatch": "❌ Бу код бошқа Telegram ҳисоб учун. Администратордан ўз ҳисобингизга мос код олинг (@username мос келиши керак).",
   "weather_prompt": "Ҳудудни киритинг: /weather Тошкент шахри",
   "weather_current": "🌤 {location}\nҲарорат: {temperature}°C (ҳис қилинган: {feels_like}°C)\nНамлик: {humidity}%\nШамол: {wind_speed} м/с\n{description}\n\nЯнгиланди: {fetched_at}",
   "weather_error": "Об-ҳавони олиб бўлмади: {message}",
@@ -12,6 +13,7 @@
   "language_set": "✅ Тил ўзгардирилди: {language}",
   "notifications_on": "✅ Билдиришномалар юқилди.",
   "notifications_off": "🔇 Билдиришномалар ўчирилди.",
+  "profile_info": "👤 Профилингиз (фақат шу шахсий чатда кўринади)\nИсм: {full_name}\nРол: {role}\nҲудуд: {region}\nTelegram: {telegram_username}",
   "new_message": "💬 Янги хабар: {sender}\n{preview}",
   "diagnosis_done": "🔬 AI таҳлил якунланди!\nКасаллик: {disease}\nИшончлилик: {confidence}\nБатафсил платформада: Ташхислар бўлими.",
   "error": "Кутмаган хатолик юз берди. Бироздан сўнг қайта уриниб кўринг."

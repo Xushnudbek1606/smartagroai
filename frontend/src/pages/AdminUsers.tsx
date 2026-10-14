@@ -19,6 +19,7 @@ interface CreateValues {
   role: Role;
   region: string;
   preferred_language: Language;
+  telegram_username: string;
 }
 
 export default function AdminUsers() {
@@ -41,7 +42,14 @@ export default function AdminUsers() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreateValues>({
-    defaultValues: { full_name: '', username: '', role: 'farmer', region: '', preferred_language: 'uz-Latn' },
+    defaultValues: {
+      full_name: '',
+      username: '',
+      role: 'farmer',
+      region: '',
+      preferred_language: 'uz-Latn',
+      telegram_username: '',
+    },
   });
 
   function load() {
@@ -66,6 +74,7 @@ export default function AdminUsers() {
         role: values.role,
         region: values.region.trim() || null,
         preferred_language: values.preferred_language,
+        telegram_username: values.telegram_username.trim().replace(/^@/, '') || null,
       });
       setOpen(false);
       reset();
@@ -215,7 +224,13 @@ export default function AdminUsers() {
                     </Badge>
                   </td>
                   <td className="px-5 py-3.5">
-                    {u.telegram_id ? <Badge tone="accent">✓</Badge> : <span className="text-textSecondary">—</span>}
+                    {u.telegram_id ? (
+                      <Badge tone="accent">✓ {u.telegram_username ? `@${u.telegram_username}` : ''}</Badge>
+                    ) : u.telegram_username ? (
+                      <Badge tone="warning">@{u.telegram_username}</Badge>
+                    ) : (
+                      <span className="text-textSecondary">—</span>
+                    )}
                   </td>
                   <td className="px-5 py-3.5 text-textSecondary" title={formatDate(u.created_at, lang)}>
                     {formatRelative(u.created_at, lang)}
@@ -299,6 +314,18 @@ export default function AdminUsers() {
           <div>
             <label className="label" htmlFor="uregion">{t('common.region')}</label>
             <input id="uregion" className="input" {...register('region')} />
+          </div>
+          <div>
+            <label className="label" htmlFor="utg">Telegram @username</label>
+            <input
+              id="utg"
+              className="input"
+              placeholder="@fermer_user"
+              {...register('telegram_username', {
+                pattern: { value: /^@?[a-zA-Z][a-zA-Z0-9_-]{3,63}$/, message: t('validation.required') },
+              })}
+            />
+            <p className="text-xs text-textSecondary mt-1">{t('admin.tgUsernameHint')}</p>
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" className="btn-secondary" onClick={() => setOpen(false)}>{t('common.cancel')}</button>

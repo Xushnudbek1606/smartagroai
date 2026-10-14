@@ -5,6 +5,7 @@
   "account_linked": "✅ Your account is linked!\nPlatform: smartagro.uz\nUsername: {username}\nTemporary password: {password}\n\n⚠️ You must change the password on first sign-in.",
   "code_invalid": "❌ The invitation code is invalid or expired. Get a new code from your administrator.",
   "already_linked": "This Telegram account is already linked. Check with /account.",
+  "username_mismatch": "❌ This code belongs to a different Telegram account. Ask the administrator for a code matching your account (@username must match).",
   "weather_prompt": "Enter a location: /weather Tashkent city",
   "weather_current": "🌤 {location}\nTemperature: {temperature}°C (feels like: {feels_like}°C)\nHumidity: {humidity}%\nWind: {wind_speed} m/s\n{description}\n\nUpdated: {fetched_at}",
   "weather_error": "Could not fetch weather: {message}",
@@ -12,6 +13,7 @@
   "language_set": "✅ Language changed: {language}",
   "notifications_on": "✅ Notifications enabled.",
   "notifications_off": "🔇 Notifications disabled.",
+  "profile_info": "👤 Your profile (visible only in this private chat)\nName: {full_name}\nRole: {role}\nArea: {region}\nTelegram: {telegram_username}",
   "new_message": "💬 New message from {sender}\n{preview}",
   "diagnosis_done": "🔬 AI analysis finished!\nDisease: {disease}\nConfidence: {confidence}\nDetails on the platform: Diagnoses section.",
   "error": "An unexpected error occurred. Please try again later."

@@ -29,6 +29,8 @@ class User(UUIDPkMixin, TimestampMixin, Base):
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[str] = mapped_column(String(20), nullable=False, index=True)  # admin|farmer|agronom
     telegram_id: Mapped[str | None] = mapped_column(String(32), unique=True, nullable=True, index=True)
+    # @username of the linked Telegram account — admin hint + pre-binding check
+    telegram_username: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
     phone: Mapped[str | None] = mapped_column(String(32), nullable=True)
     region: Mapped[str | None] = mapped_column(String(80), nullable=True)
     district: Mapped[str | None] = mapped_column(String(80), nullable=True)

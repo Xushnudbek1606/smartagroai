@@ -174,6 +174,8 @@ def create_user(
     settings_user = User(
         full_name=body.full_name.strip(),
         username=body.username.strip(),
+        # Telegram @username pre-binds linking before any code is sent.
+        telegram_username=(body.telegram_username.strip().lstrip("@") if body.telegram_username else None),
         password_hash=hash_password(generate_temp_password()),
         role=body.role,
         phone=body.phone,
@@ -220,6 +222,13 @@ def update_user(
     data = body.model_dump(exclude_unset=True)
     if "role" in data and data["role"] != target.role and target.id == admin.id:
         raise bad_request("You cannot change your own role", "own_role")
+    if "telegram_username" in data and data["telegram_username"]:
+        if target.telegram_id:
+            raise bad_request(
+                "Telegram username is managed by the linked account",
+                "telegram_already_linked",
+            )
+        data["telegram_username"] = str(data["telegram_username"]).strip().lstrip("@")
     for field, value in data.items():
         setattr(target, field, value)
     db.add(target)

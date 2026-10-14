@@ -5,6 +5,7 @@
   "account_linked": "✅ Hisobingiz bog'landi!\nLoyiha: smartagro.uz\nLogin: {username}\nVaqtinchalik parol: {password}\n\n⚠️ Birinchi kirishda parolni almashtirish shart.",
   "code_invalid": "❌ Taklif kod noto'g'ri yoki muddati tugagan. Administratordan yangi kod oling.",
   "already_linked": "Bu Telegram akkaunt allaqachon bog'langan. /account buyrug'i bilan tekshiring.",
+  "username_mismatch": "❌ Bu kod boshqa Telegram akkaunti uchun. Administratordan o'z akkauntingizga mos kod oling (@username mos kelishi kerak).",
   "weather_prompt": "Hududni kiriting: /weather Toshkent shahri",
   "weather_current": "🌤 {location}\nHarorat: {temperature}°C (his qilingan: {feels_like}°C)\nNamlik: {humidity}%\nShamol: {wind_speed} m/s\n{description}\n\nYangilangan: {fetched_at}",
   "weather_error": "Ob-havoni olib bo'lmadi: {message}",
@@ -12,6 +13,7 @@
   "language_set": "✅ Til o'zgartirildi: {language}",
   "notifications_on": "✅ Bildirishnomalar yoqildi.",
   "notifications_off": "🔇 Bildirishnomalar o'chirildi.",
+  "profile_info": "👤 Profilingiz (faqat shu shaxsiy chatda ko'rinadi)\nIsm: {full_name}\nRol: {role}\nHudud: {region}\nTelegram: {telegram_username}",
   "new_message": "💬 Yangi xabar: {sender}\n{preview}",
   "diagnosis_done": "🔬 AI tahlil yakunlandi!\nKasallik: {disease}\nIshonchlilik: {confidence}\nBatafsil platformada: Tashxislar bo'limi.",
   "error": "Kutilmagan xatolik yuz berdi. Birozdan so'ng qayta urinib ko'ring."

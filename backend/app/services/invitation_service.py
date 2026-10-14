@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
-from app.core.errors import bad_request, conflict, not_found, unauthorized
+from app.core.errors import bad_request, conflict, forbidden, not_found, unauthorized
 from app.core.security import (
     generate_one_time_code,
     generate_temp_password,
@@ -80,8 +80,22 @@ def claim_invitation(
     if not user.is_active:
         raise bad_request("This account is deactivated", "account_deactivated")
 
+    # Pre-binding: when the admin saved a @username in advance, only that
+    # Telegram account may complete the claim — the code is useless if a
+    # stranger gets hold of it.
+    if user.telegram_username:
+        expected = user.telegram_username.lstrip("@").lower()
+        got = (telegram_username or "").lstrip("@").lower()
+        if got != expected:
+            raise forbidden(
+                "This code belongs to a different Telegram account",
+                "telegram_username_mismatch",
+            )
+
     temp_password = generate_temp_password()
     user.telegram_id = telegram_id
+    # keep the @username as a stable hint (may be None if Telegram hides it)
+    user.telegram_username = telegram_username
     user.password_hash = hash_password(temp_password)
     user.must_change_password = True
     db.add(user)

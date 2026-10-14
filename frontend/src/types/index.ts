@@ -7,6 +7,7 @@ export interface User {
   username: string;
   role: Role;
   telegram_id: string | null;
+  telegram_username: string | null;
   phone: string | null;
   region: string | null;
   district: string | null;

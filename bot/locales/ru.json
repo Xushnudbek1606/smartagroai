@@ -5,6 +5,7 @@
   "account_linked": "✅ Ваш аккаунт привязан!\nПлатформа: smartagro.uz\nЛогин: {username}\nВременный пароль: {password}\n\n⚠️ При первом входе необходимо сменить пароль.",
   "code_invalid": "❌ Код приглашения недействителен или истёк. Получите новый код у администратора.",
   "already_linked": "Этот аккаунт Telegram уже привязан. Проверьте через /account.",
+  "username_mismatch": "❌ Этот код предназначен для другого аккаунта Telegram. Получите у администратора код для вашего аккаунта (@username должен совпадать).",
   "weather_prompt": "Введите местоположение: /weather Ташкент",
   "weather_current": "🌤 {location}\nТемпература: {temperature}°C (ощущается: {feels_like}°C)\nВлажность: {humidity}%\nВетер: {wind_speed} м/с\n{description}\n\nОбновлено: {fetched_at}",
   "weather_error": "Не удалось получить погоду: {message}",
@@ -12,6 +13,7 @@
   "language_set": "✅ Язык изменён: {language}",
   "notifications_on": "✅ Уведомления включены.",
   "notifications_off": "🔇 Уведомления отключены.",
+  "profile_info": "👤 Ваш профиль (виден только в этом личном чате)\nИмя: {full_name}\nРоль: {role}\nРегион: {region}\nTelegram: {telegram_username}",
   "new_message": "💬 Новое сообщение от {sender}\n{preview}",
   "diagnosis_done": "🔬 Анализ ИИ завершён!\nЗаболевание: {disease}\nУверенность: {confidence}\nПодробности на платформе: раздел «Диагнозы».",
   "error": "Произошла непредвиденная ошибка. Попробуйте позже."

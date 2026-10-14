@@ -13,6 +13,8 @@ from app.schemas import (
     InvitationClaimRequest,
     InvitationStatusOut,
     TelegramHeartbeat,
+    TelegramLanguageRequest,
+    TelegramPreferencesRequest,
 )
 from app.services import invitation_service
 
@@ -47,6 +49,9 @@ def claim(body: InvitationClaimRequest) -> InvitationClaimOut:
     return InvitationClaimOut(**result)
 
 
+SUPPORTED_LANGUAGES = ("uz-Latn", "uz-Cyrl", "en", "ru")
+
+
 @router.get("/telegram/status", response_model=InvitationStatusOut, dependencies=[secret_dep])
 def telegram_status(telegram_id: str) -> InvitationStatusOut:
     return InvitationStatusOut(
@@ -55,12 +60,22 @@ def telegram_status(telegram_id: str) -> InvitationStatusOut:
 
 
 @router.get("/telegram/user", dependencies=[secret_dep])
-def telegram_user(telegram_id: str) -> dict:
+def telegram_user(telegram_id: str, telegram_username: str | None = None) -> dict:
+    """Identity of the Telegram account behind a chat. The bot passes the
+    current @username so the stored binding follows Telegram: if the user
+    later sets or renames their username, the platform record is refreshed
+    instead of going stale (the stable key stays telegram_id)."""
     db = SessionLocal()
     try:
         user = db.query(User).filter(User.telegram_id == telegram_id).first()
         if user is None:
             return {"found": False}
+        if telegram_username:
+            cleaned = telegram_username.strip().lstrip("@")
+            if cleaned and cleaned != user.telegram_username:
+                user.telegram_username = cleaned
+                db.add(user)
+                db.commit()
         return {
             "found": True,
             "username": user.username,
@@ -68,8 +83,29 @@ def telegram_user(telegram_id: str) -> dict:
             "full_name": user.full_name,
             "role": user.role,
             "region": user.region,
+            "district": user.district,
+            "telegram_username": user.telegram_username,
             "notifications_enabled": user.telegram_notifications_enabled,
         }
+    finally:
+        db.close()
+
+
+@router.post("/telegram/language", dependencies=[secret_dep])
+def set_language(body: TelegramLanguageRequest) -> dict:
+    """Bot /language choice persists to the user's profile so every surface
+    (web, bot, notifications) follows one language."""
+    if body.language not in SUPPORTED_LANGUAGES:
+        return {"status": "unsupported", "language": body.language}
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.telegram_id == body.telegram_id).first()
+        if user is None:
+            return {"status": "not_linked"}
+        user.preferred_language = body.language
+        db.add(user)
+        db.commit()
+        return {"status": "ok", "language": body.language}
     finally:
         db.close()
 
@@ -94,16 +130,16 @@ def heartbeat(body: TelegramHeartbeat) -> dict:
 
 
 @router.post("/telegram/preferences", dependencies=[secret_dep])
-def set_preferences(telegram_id: str, enabled: bool) -> dict:
+def set_preferences(body: TelegramPreferencesRequest) -> dict:
     db = SessionLocal()
     try:
-        user = db.query(User).filter(User.telegram_id == telegram_id).first()
+        user = db.query(User).filter(User.telegram_id == body.telegram_id).first()
         if user is None:
             return {"status": "not_linked"}
-        user.telegram_notifications_enabled = enabled
+        user.telegram_notifications_enabled = body.enabled
         db.add(user)
         db.commit()
-        return {"status": "ok", "enabled": enabled}
+        return {"status": "ok", "enabled": body.enabled}
     finally:
         db.close()
 

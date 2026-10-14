@@ -436,7 +436,8 @@
     "notConfigured": "Sozlanmagan",
     "assignFarmer": "Fermerni biriktirish",
     "assigned": "Biriktirildi",
-    "subUnlimitedHint": "Cheksizlik uchun -1 yozing"
+    "subUnlimitedHint": "Cheksizlik uchun -1 yozing",
+    "tgUsernameHint": "Foydalanuvchining Telegram @username'i (siz oldindan yozasiz). Bog'langanda kodni faqat shu akkaunt qabul qiladi."
   },
   "errors": {
     "network": "Tarmoq bilan aloqa yo'q. Internet ulanishini tekshiring.",

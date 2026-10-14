@@ -436,7 +436,8 @@
     "notConfigured": "Not configured",
     "assignFarmer": "Assign farmer",
     "assigned": "Assigned",
-    "subUnlimitedHint": "Enter -1 for unlimited"
+    "subUnlimitedHint": "Enter -1 for unlimited",
+    "tgUsernameHint": "The user's Telegram @username (you enter it in advance). Once linked, only this account may claim the code."
   },
   "errors": {
     "network": "No network connection. Check your internet.",
