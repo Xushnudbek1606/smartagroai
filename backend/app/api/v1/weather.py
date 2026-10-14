@@ -35,14 +35,29 @@ def regions(user: CurrentUser) -> list[WeatherLocationOut]:
     return [WeatherLocationOut(**loc) for loc in UZBEKISTAN_LOCATIONS]
 
 
+def _require_location(location: str | None, lat: float | None, lon: float | None) -> None:
+    if location is None and (lat is None or lon is None):
+        raise AppError(
+            400,
+            "weather_location_required",
+            "location yoki lat va lon parameterlari kerak",
+        )
+
+
 @router.get("/current", response_model=WeatherCurrentOut)
 def current(
     db: DbSession,
     user: CurrentUser,
-    location: str = Query(min_length=2, max_length=120),
+    location: str | None = Query(default=None, min_length=2, max_length=120),
+    lat: float | None = Query(default=None, ge=-90, le=90),
+    lon: float | None = Query(default=None, ge=-180, le=180),
 ) -> WeatherCurrentOut:
+    _require_location(location, lat, lon)
     try:
-        data = weather_service.current(db, location)
+        if lat is not None and lon is not None:
+            data = weather_service.current_by_coords(db, lat, lon)
+        else:
+            data = weather_service.current(db, location)
     except WeatherServiceError as err:
         raise _wrap(err)
     return WeatherCurrentOut(
@@ -67,10 +82,16 @@ def current(
 def forecast(
     db: DbSession,
     user: CurrentUser,
-    location: str = Query(min_length=2, max_length=120),
+    location: str | None = Query(default=None, min_length=2, max_length=120),
+    lat: float | None = Query(default=None, ge=-90, le=90),
+    lon: float | None = Query(default=None, ge=-180, le=180),
 ) -> WeatherForecastOut:
+    _require_location(location, lat, lon)
     try:
-        data = weather_service.forecast(db, location)
+        if lat is not None and lon is not None:
+            data = weather_service.forecast_by_coords(db, lat, lon)
+        else:
+            data = weather_service.forecast(db, location)
     except WeatherServiceError as err:
         raise _wrap(err)
     days = [WeatherDayOut(**d) for d in data.get("days", [])]

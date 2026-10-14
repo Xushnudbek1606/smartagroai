@@ -140,6 +140,7 @@ export interface WeatherDay {
   precipitation_probability: number | null;
   humidity: number | null;
   wind_speed: number | null;
+  rain_periods: string[];
 }
 
 export interface WeatherForecast {

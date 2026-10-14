@@ -34,6 +34,9 @@ UZBEKISTAN_LOCATIONS: list[dict[str, Any]] = [
 ]
 
 
+GEO_BASE_URL = "https://api.openweathermap.org/geo/1.0/direct"
+
+
 class WeatherServiceError(Exception):
     def __init__(self, code: str, message: str, status_code: int = 503) -> None:
         super().__init__(message)
@@ -44,6 +47,39 @@ class WeatherServiceError(Exception):
 
 def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
+
+
+def geo_cache_key(lat: float, lon: float) -> str:
+    """Cache key for coordinate lookups (~1.1 km grid at 2 decimals)."""
+    return f"geo:{lat:.2f},{lon:.2f}"
+
+
+def coords_label(lat: float, lon: float) -> str:
+    return f"{lat:.2f}°, {lon:.2f}°"
+
+
+# 3-hour slots at/above this chance count as "rain expected" for the day
+RAIN_POP_THRESHOLD = 0.4
+
+
+def rain_periods(slots: list[int]) -> list[str]:
+    """Merge rainy 3-hour slots (provider local hours) into time windows.
+
+    e.g. [12, 15, 21] -> ["12:00–18:00", "21:00–00:00"]
+    """
+    if not slots:
+        return []
+    hours = sorted(set(slots))
+    periods: list[str] = []
+    start = prev = hours[0]
+    for hour in hours[1:]:
+        if hour - prev <= 3:  # adjacent 3-hour slot — same rain window
+            prev = hour
+            continue
+        periods.append(f"{start:02d}:00–{(prev + 3) % 24:02d}:00")
+        start = prev = hour
+    periods.append(f"{start:02d}:00–{(prev + 3) % 24:02d}:00")
+    return periods
 
 
 def _valid(cache: WeatherCache | None) -> bool:
@@ -90,9 +126,16 @@ class WeatherService:
     def forecast(self, db: Session, location: str) -> dict[str, Any]:
         return self._get(db, location, kind="forecast")
 
+    def current_by_coords(self, db: Session, lat: float, lon: float) -> dict[str, Any]:
+        """Weather for an exact GPS position (browser geolocation)."""
+        return self._get(db, geo_cache_key(lat, lon), kind="current", coords=(lat, lon))
+
+    def forecast_by_coords(self, db: Session, lat: float, lon: float) -> dict[str, Any]:
+        return self._get(db, geo_cache_key(lat, lon), kind="forecast", coords=(lat, lon))
+
     # ----- internals -----
 
-    def _get(self, db: Session, location: str, kind: str) -> dict[str, Any]:
+    def _get(self, db: Session, location: str, kind: str, coords: tuple[float, float] | None = None) -> dict[str, Any]:
         settings = get_settings()
         if not settings.weather_configured:
             raise WeatherServiceError(
@@ -112,12 +155,16 @@ class WeatherService:
             return payload
 
         if kind == "current":
-            raw = self._fetch_current(location)
-            payload = self._normalize_current(location, raw)
+            raw = self._fetch_current(location, coords=coords)
+            payload = self._normalize_current(
+                self._display_location(raw, kind, coords, location), raw
+            )
             ttl = settings.WEATHER_CACHE_TTL_SECONDS
         else:
-            raw = self._fetch_forecast(location)
-            payload = self._normalize_forecast(location, raw)
+            raw = self._fetch_forecast(location, coords=coords)
+            payload = self._normalize_forecast(
+                self._display_location(raw, kind, coords, location), raw
+            )
             ttl = settings.FORECAST_CACHE_TTL_SECONDS
 
         now = _utcnow()
@@ -142,19 +189,103 @@ class WeatherService:
         payload["expires_at"] = (now + timedelta(seconds=ttl)).isoformat()
         return payload
 
-    def _fetch_current(self, location: str) -> dict[str, Any]:
+    @staticmethod
+    def _display_location(
+        raw: dict[str, Any],
+        kind: str,
+        coords: tuple[float, float] | None,
+        fallback: str,
+    ) -> str:
+        """Human-readable place name for coordinate lookups (provider reverse name)."""
+        if coords is None:
+            return fallback
+        if kind == "current":
+            name = raw.get("name") or ""
+            country = (raw.get("sys") or {}).get("country") or ""
+        else:
+            city = raw.get("city") or {}
+            name = city.get("name") or ""
+            country = city.get("country") or ""
+        label = ", ".join(part for part in (name, country) if part)
+        return label or coords_label(*coords)
+
+    @staticmethod
+    def _query_params(
+        location: str, coords: tuple[float, float] | None
+    ) -> dict[str, Any]:
+        if coords is not None:
+            return {"lat": coords[0], "lon": coords[1]}
+        return {"q": f"{location},UZ"}
+
+    @staticmethod
+    def _location_candidates(location: str) -> list[str]:
+        """Progressively looser geocoding queries for a "Region, District" name.
+
+        OpenWeatherMap's city DB cannot resolve every composed name
+        (e.g. "Surxondaryo, Termiz"), so we retry with the bare district,
+        an apostrophe-normalized variant and finally the bare region.
+        """
+        parts = [p.strip() for p in location.split(",") if p.strip()]
+        candidates = [location]
+        if len(parts) > 1:
+            candidates.append(parts[-1])
+            stripped = parts[-1].replace("'", "")
+            if stripped != parts[-1]:
+                candidates.append(stripped)
+        stripped_full = location.replace("'", "")
+        if stripped_full != location:
+            candidates.append(stripped_full)
+        if len(parts) > 1:
+            candidates.append(parts[0])
+        seen: set[str] = set()
+        return [c for c in candidates if not (c in seen or seen.add(c))]
+
+    def _geocode(self, client: httpx.Client, location: str) -> tuple[float, float] | None:
+        """Resolve a place name to coordinates via the OWM Geo API, or None."""
         settings = get_settings()
+        for query in self._location_candidates(location):
+            try:
+                resp = client.get(
+                    GEO_BASE_URL,
+                    params={"q": query, "limit": 1, "appid": settings.WEATHER_API_KEY},
+                )
+            except httpx.HTTPError:
+                return None
+            if resp.status_code != 200:
+                continue
+            hits = resp.json() or []
+            if hits:
+                return float(hits[0]["lat"]), float(hits[0]["lon"])
+        return None
+
+    def _weather_params(
+        self, location: str, coords: tuple[float, float] | None
+    ) -> dict[str, Any]:
+        settings = get_settings()
+        return {
+            **self._query_params(location, coords),
+            "appid": settings.WEATHER_API_KEY,
+            "units": "metric",
+            "lang": "uz",
+        }
+
+    def _fetch_current(
+        self, location: str, coords: tuple[float, float] | None = None
+    ) -> dict[str, Any]:
+        params = self._weather_params(location, coords)
+        weather_url = "https://api.openweathermap.org/data/2.5/weather"
         try:
             with httpx.Client(timeout=15.0) as client:
-                resp = client.get(
-                    "https://api.openweathermap.org/data/2.5/weather",
-                    params={
-                        "q": f"{location},UZ",
-                        "appid": settings.WEATHER_API_KEY,
-                        "units": "metric",
-                        "lang": "uz",
-                    },
-                )
+                resp = client.get(weather_url, params=params)
+                if resp.status_code == 404 and coords is None:
+                    # The composed name is unknown to the city DB: geocode it
+                    # and retry by coordinates (display name stays requested).
+                    resolved = self._geocode(client, location)
+                    if resolved:
+                        resp = client.get(
+                            weather_url,
+                            params=self._weather_params(location, resolved),
+                        )
         except httpx.HTTPError as exc:
             raise WeatherServiceError(WEATHER_API_UNAVAILABLE, "Ob-havo xizmatiga ulanib bo'lmadi") from exc
         if resp.status_code == 401:
@@ -166,19 +297,21 @@ class WeatherService:
             raise WeatherServiceError(WEATHER_API_UNAVAILABLE, "Ob-havo xizmati vaqtincha ishlamayapti")
         return resp.json()
 
-    def _fetch_forecast(self, location: str) -> dict[str, Any]:
-        settings = get_settings()
+    def _fetch_forecast(
+        self, location: str, coords: tuple[float, float] | None = None
+    ) -> dict[str, Any]:
+        params = self._weather_params(location, coords)
+        forecast_url = "https://api.openweathermap.org/data/2.5/forecast"
         try:
             with httpx.Client(timeout=15.0) as client:
-                resp = client.get(
-                    "https://api.openweathermap.org/data/2.5/forecast",
-                    params={
-                        "q": f"{location},UZ",
-                        "appid": settings.WEATHER_API_KEY,
-                        "units": "metric",
-                        "lang": "uz",
-                    },
-                )
+                resp = client.get(forecast_url, params=params)
+                if resp.status_code == 404 and coords is None:
+                    resolved = self._geocode(client, location)
+                    if resolved:
+                        resp = client.get(
+                            forecast_url,
+                            params=self._weather_params(location, resolved),
+                        )
         except httpx.HTTPError as exc:
             raise WeatherServiceError(WEATHER_API_UNAVAILABLE, "Ob-havo xizmatiga ulanib bo'lmadi") from exc
         if resp.status_code == 404:
@@ -229,6 +362,7 @@ class WeatherService:
                     "precipitation_probability": None,
                     "humidity": main.get("humidity"),
                     "wind_speed": item.get("wind", {}).get("speed"),
+                    "_rainy_hours": [],
                 },
             )
             if main.get("temp_min") is not None:
@@ -238,7 +372,14 @@ class WeatherService:
             if pop is not None:
                 p = int(round(pop * 100))
                 d["precipitation_probability"] = max(d["precipitation_probability"] or 0, p)
+                if pop >= RAIN_POP_THRESHOLD:
+                    try:
+                        d["_rainy_hours"].append(int(dt_txt[11:13]))
+                    except ValueError:
+                        pass
         days = sorted(by_day.values(), key=lambda d: d["date"])[:7]
+        for d in days:
+            d["rain_periods"] = rain_periods(d.pop("_rainy_hours", []))
         advisories = build_advisories({}, days)
         return {
             "location": location,

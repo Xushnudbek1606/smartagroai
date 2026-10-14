@@ -315,6 +315,7 @@ class WeatherDayOut(BaseModel):
     precipitation_probability: int | None = None
     humidity: int | None = None
     wind_speed: float | None = None
+    rain_periods: list[str] = []
 
 
 class WeatherForecastOut(BaseModel):
